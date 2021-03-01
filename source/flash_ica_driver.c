@@ -86,10 +86,10 @@ int32_t FICA_app_program_ext_init(int32_t newimgtype)
         status = FICA_GetCurAppStartType(&curimgtype);
     }
 
-    if (newimgtype == curimgtype)
-    {
-        status = SLN_FLASH_ERROR;
-    }
+//    if (newimgtype == curimgtype)
+//    {
+//        status = SLN_FLASH_ERROR;
+//    }
 
     if (SLN_FLASH_NO_ERROR == status)
     {
@@ -925,11 +925,11 @@ int32_t FICA_get_app_img_start_addr(int32_t imgtype, uint32_t *startaddr)
                 break;
             case FICA_IMG_TYPE_NONE:
             default:
-                *startaddr = 0;
+                *startaddr = FICA_IMG_INVALID_ADDR;
                 break;
         }
 
-        if (*startaddr != 0)
+        if (*startaddr != FICA_IMG_INVALID_ADDR)
         {
             status = SLN_FLASH_NO_ERROR;
         }

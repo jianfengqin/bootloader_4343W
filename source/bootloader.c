@@ -288,7 +288,7 @@ static void jumpToMainAppTask(void)
     /* main app does not start correctly without this. why? */
     DbgConsole_Deinit();
 
-    NVIC_DisableIRQ(LPUART6_IRQn);
+    //NVIC_DisableIRQ(LPUART6_IRQn);
 
     RGB_LED_SetColor(LED_COLOR_OFF);
 

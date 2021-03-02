@@ -32,8 +32,9 @@
 #define IMG_EXT_NO_ERROR 0
 #define IMG_EXT_ERROR 1
 
-#define EXT_FLASH_PROGRAM_PAGE 0x200 // 512B
-#define EXT_FLASH_ERASE_PAGE 0x40000 // 256KB
+#define EXT_FLASH_PROGRAM_PAGE BOARD_FLASH_PAGE_SIZE
+#define EXT_FLASH_ERASE_PAGE BOARD_FLASH_SECTOR_SIZE
+#define EXT_FLASH_ID BOARD_FLASH_ID
 
 #define SLN_FLASH_NO_ERROR 0
 #define SLN_FLASH_ERROR -1
@@ -280,7 +281,7 @@ int32_t FICA_SetCurBootType(int32_t imgtype);
  * @brief Reads the hyperflash ID
  *
  */
-int32_t FICA_read_hyper_flash_id(uint8_t *pid);
+int32_t FICA_read_hyper_flash_id(uint16_t id);
 
 /*!
  * @brief Reads the current image type

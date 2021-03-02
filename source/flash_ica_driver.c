@@ -134,7 +134,7 @@ int32_t FICA_app_program_ext_init(int32_t newimgtype)
     return status;
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_app_program_ext_abs(uint32_t offset,
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_app_program_ext_abs(uint32_t offset,
                                                                                              uint8_t *bufptr,
                                                                                              uint32_t writelen)
 {
@@ -304,7 +304,7 @@ int32_t FICA_app_program_ext_finalize()
     return status;
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_app_program_ext_set_reset_vector(void)
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_app_program_ext_set_reset_vector(void)
 {
     int32_t status = SLN_FLASH_NO_ERROR;
     bool commflag  = false;
@@ -355,7 +355,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_app_pro
     return status;
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_Erase_Bank(uint32_t startaddr,
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_Erase_Bank(uint32_t startaddr,
                                                                                     uint32_t banksize)
 {
     // Erase all sectors in this bank
@@ -763,7 +763,7 @@ int32_t FICA_clear_buf(uint8_t *pbuf, uint8_t initval, uint32_t len)
     return status;
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_read_db(void)
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_read_db(void)
 {
     uint8_t *bufptr = s_appImgBuffer;
 
@@ -776,7 +776,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_read_db
     return (SLN_FLASH_NO_ERROR);
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_write_db(void)
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_write_db(void)
 {
     int32_t status  = SLN_FLASH_NO_ERROR;
     uint8_t *bufptr = (uint8_t *)&s_fica;
@@ -827,7 +827,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_write_d
     return status;
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_write_buf(uint32_t offset,
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_write_buf(uint32_t offset,
                                                                                    uint32_t len,
                                                                                    void *buf)
 {
@@ -846,7 +846,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_write_b
     return (SLN_FLASH_NO_ERROR);
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_write_full_page(uint32_t offset,
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_write_full_page(uint32_t offset,
                                                                                          uint32_t progpagesize,
                                                                                          uint32_t erasepagersize,
                                                                                          uint32_t *pdatabuf)
@@ -874,7 +874,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_write_f
     return (SLN_FLASH_NO_ERROR);
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_read_buf(uint32_t offset,
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_read_buf(uint32_t offset,
                                                                                   uint32_t len,
                                                                                   void *buf)
 {
@@ -1146,13 +1146,18 @@ int32_t FICA_initialize(void)
 
 int32_t FICA_verify_ext_flash(void)
 {
-    uint8_t id   = 0x7E;
-    uint8_t *pid = (uint8_t *)&id;
+    uint16_t id   = EXT_FLASH_ID;
+    //uint8_t *pid = (uint8_t *)&id;
 
     configPRINTF(("[FICA] RT HYPERFLASH Check...\r\n"));
 
     // Read flash vendor ID
-    if (FICA_read_hyper_flash_id(pid) != SLN_FLASH_NO_ERROR)
+
+#if RTVISION_BOARD
+    if (FICA_read_hyper_flash_id(id) != SLN_FLASH_NO_ERROR)
+#elif RT106F_ELOCK_BOARD
+    if (flexspi_nor_qspi_flash_id(FLEXSPI,id) != kStatus_Success)
+#endif
     {
         configPRINTF(("[FICA] ERROR: Cannot find Flash device!\r\n"));
 
@@ -1166,9 +1171,10 @@ int32_t FICA_verify_ext_flash(void)
     return (SLN_FLASH_NO_ERROR);
 }
 
-__attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_read_hyper_flash_id(uint8_t *pid)
+#if RTVISION_BOARD
+__attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_read_hyper_flash_id(uint16_t id)
 {
-    uint8_t id;
+    uint8_t *pid;
     int32_t ret = SLN_FLASH_NO_ERROR;
     uint32_t irqState;
 
@@ -1177,7 +1183,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_read_hy
     SLN_ram_disable_d_cache();
 
     // Read hyperflash ID
-    ret = flexspi_nor_hyperflash_id(FLEXSPI, &id);
+    ret = flexspi_nor_hyperflash_id(FLEXSPI, pid);
 
     if (SLN_FLASH_NO_ERROR != ret)
     {
@@ -1187,7 +1193,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_read_hy
     if (SLN_FLASH_NO_ERROR == ret)
     {
         // Check if it matches the intended device
-        if (*pid != id)
+        if (*pid != (id&0xFF))
         {
             ret = SLN_FLASH_ERROR;
         }
@@ -1202,6 +1208,7 @@ __attribute__((section(".ramfunc.$SRAM_OC_NON_CACHEABLE"))) int32_t FICA_read_hy
 
     return ret;
 }
+#endif
 
 void reset_mcu(void)
 {

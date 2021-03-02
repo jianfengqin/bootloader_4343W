@@ -55,12 +55,31 @@ BOARD_InitPins:
 void BOARD_InitPins(void) {
     BOARD_ConfigUSBMPU();
     BOARD_BootClockRUN();
+#if RTVISION_BOARD
     BOARD_InitA71CHPins();
     BOARD_InitPCAL();
     BOARD_InitBluetooth();
     BOARD_InitWifi();
     BOARD_InitDEBUG_UARTPins();
     BOARD_InitLPUART5Pins();
+#else
+    BOARD_InitLPUART5Pins();
+
+#define BOARD_USER_SWITCH_GPIO GPIO2
+#define SW1_GPIO_PIN 23U
+    IOMUXC_SetPinMux(
+            IOMUXC_GPIO_B1_07_GPIO2_IO23,           /* GPIO_B1_07 is configured as GPIO2_IO23 */
+            0U);
+    /* Define the init structure for the input switch pin */
+    gpio_pin_config_t sw_config = {
+        kGPIO_DigitalInput,
+        0,
+		kGPIO_NoIntmode,
+    };
+
+    /* Init input switch GPIO. */
+    GPIO_PinInit(BOARD_USER_SWITCH_GPIO, SW1_GPIO_PIN, &sw_config);
+#endif
 }
 
 

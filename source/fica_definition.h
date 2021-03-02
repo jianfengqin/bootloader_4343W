@@ -9,6 +9,7 @@
 
 #ifndef _FICA_DEFINITION_
 #define _FICA_DEFINITION_
+#include "board.h"
 
 /*******************************************************************************
  * FICA (Flash Image Configuration Area) Definitions
@@ -18,9 +19,10 @@
 // FICA Descriptor, used to determine if the FICA area has been initialized or not
 #define FICA_ICA_DESC 0xA5A5A5A5
 
-// Start address of FICA area in flash
-#define FICA_START_ADDR 0x01FC0000 // with 256KB Erase Block
-#define FICA_TABLE_SIZE 0x00040000 // with 256KB Erase Block
+// Start address of FICA area in flash is the last sector
+#define FICA_START_ADDR (BOARD_FLASH_SIZE-BOARD_FLASH_SECTOR_SIZE) // with 256KB Erase Block
+#define FICA_TABLE_SIZE BOARD_FLASH_SECTOR_SIZE // with 256KB Erase Block
+
 
 // FICA field size
 #define FICA_FIELD_SIZE 4
@@ -78,10 +80,10 @@ typedef enum _fica_img_type
 // Image Flash Start Addresses for this flash (IS26KL256S)
 #define FICA_IMG_ICA_DEF_ADDR FICA_START_ADDR + FICA_ICA_DEFINITION_SIZE
 
-#define FICA_IMG_BOOTSTRAP_ADDR     0x00000000
-#define FICA_IMG_BOOTSTRAP_IVT_ADDR 0x00001000
-#define FICA_IMG_BOOTLOADER_ADDR    0x00040000
-#define FICA_IMG_RESERVED_ADDR      0x00200000
+//#define FICA_IMG_BOOTSTRAP_ADDR     0x00000000
+//#define FICA_IMG_BOOTSTRAP_IVT_ADDR 0x00001000
+#define FICA_IMG_BOOTLOADER_ADDR    0//0x00040000
+#define FICA_IMG_RESERVED_ADDR      0x00100000
 #define FICA_IMG_APP_A_ADDR         0x00300000
 #define FICA_IMG_APP_B_ADDR         0x00D00000
 #define FICA_IMG_INVALID_ADDR       0xFFFFFFFF
@@ -90,10 +92,10 @@ typedef enum _fica_img_type
 #define APPLICATION_RESET_ISR_ADDRESS (SCB->VTOR + 0x4)
 
 #define FICA_IMG_BOOTSTRAP_SIZE  0x00040000 // 0.25 MB
-#define FICA_IMG_BOOTLOADER_SIZE 0x001C0000 // 1.75 MB
-#define FICA_IMG_RESERVED_SIZE   0x00100000 // 1 MB
-#define FICA_IMG_APP_A_SIZE      0x00A00000 // 10 MB
-#define FICA_IMG_APP_B_SIZE      0x00A00000 // 10 MB
+#define FICA_IMG_BOOTLOADER_SIZE 0x100000//0x001C0000 // 1.75 MB
+#define FICA_IMG_RESERVED_SIZE   0x00200000 // 1 MB
+#define FICA_IMG_APP_A_SIZE      0x00300000 // 10 MB
+#define FICA_IMG_APP_B_SIZE      0x00300000 // 10 MB
 
 // Image Size
 #define FICA_IMG_SIZE_ZERO 0 // default

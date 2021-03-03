@@ -33,7 +33,7 @@ static msc_vfs_state_t s_transferState = TRANSFER_IDLE;
 
 static TaskHandle_t *s_usbAppTaskHandle = NULL;
 
-const char *ext = "BIN";
+static const char s_BinFileExtensionStr[] = "BIN";
 
 static const fat_mbr_t s_fatMbrInit = {.jump_instr              = {0xEB, 0x3C, 0x90},
                                        .oem_name                = {'M', 'S', 'D', '0', 'S', '5', '.', '0'},
@@ -101,40 +101,42 @@ status_t MSC_VFS_WriteResponse(uint32_t offset, uint32_t size, uint8_t *buffer)
 
     if (0 != size)
     {
-        char *ret = NULL;
-
-        for (uint32_t idx = 0; idx < size; idx++)
-        {
-            if (0 == memcmp(&buffer[idx], ext, 3))
-            {
-                ret = (char *)(&buffer[idx]);
-                break;
-            }
-        }
-
-        if (NULL != ret)
-        {
-            char *temp         = ret - 8;
-            fat_file_t *file   = (fat_file_t *)temp;
-            char *fileName[12] = {0};
-
-            memcpy(fileName, file->name, sizeof(file->name));
-
-            if ((0 < file->size) && (FICA_IMG_APP_A_SIZE >= file->size))
-            {
-                configPRINTF(
-                    ("[Write Response] File Attributes: Name - %s, Size - %d\r\n", (const char *)fileName, file->size));
-
-                s_fileLength = file->size;
-            }
-        }
-
-#if 0
-        configPRINTF(("[Write Response] offset: %d\r\n", offset));
-        configPRINTF(("[Write Response] size: %d\r\n", size));
+#if 1
+        configPRINTF(("[Write Response] offset: %d size: %d  s_transferState:%d\r\n", offset,size,s_transferState));
+//        configPRINTF(("[Write Response] size: %d\r\n", size));
 #endif
-
         if (TRANSFER_IDLE == s_transferState)
+        {
+
+			for (uint32_t idx = 0; idx < size; idx++)
+			{
+				int ret = memcmp(&buffer[idx], s_BinFileExtensionStr,strlen(s_BinFileExtensionStr));
+				if (0 == ret &&
+					idx >= 8   /*name format is :  8 + 3 chars*/
+					&&strlen((char*)&buffer[idx - 8]) >= 11) /*file name must be a string*/
+				{
+					//file name format is: "***BIN"
+					char* cadidate = (char *)(&buffer[idx - 8]);
+					fat_file_t *file   = (fat_file_t *)cadidate;
+					if (file->size > 0 && file->size <= FICA_IMG_APP_A_SIZE && file->size <= FICA_IMG_APP_B_SIZE)
+					{
+						//there is no string end in file's name
+						char file_name[sizeof(file->name) + 1];
+						memcpy(file_name,file->name,sizeof(file->name));
+						file_name[sizeof(file->name)] = 0;
+
+						configPRINTF(
+							("[Write Response] File Attributes: Name - %s, Size - %d\r\n", (const char *)file_name, file->size));
+
+						s_fileLength = file->size;
+						s_transferState = TRANSFER_START;
+						break;
+					}
+
+				}
+			}
+
+        }else if (TRANSFER_START == s_transferState)
         {
             // Determine the base programming address from the passed image reset vector
             uint32_t *resetHandler = (uint32_t *)(&buffer[4]);
@@ -148,21 +150,14 @@ status_t MSC_VFS_WriteResponse(uint32_t offset, uint32_t size, uint8_t *buffer)
                 int32_t currImgType  = FICA_IMG_TYPE_NONE;
                 uint32_t imgBaseAddr = (uint32_t)(*resetHandler & FLASH_BYTE3_UPPER_NIBBLE);
 
-                s_transferState = TRANSFER_START;
 
                 configPRINTF(("[Write Response] Reset Handler: 0x%X\r\n", *resetHandler));
 
-                // Initialize FICA, verify img address is valid
-                flashError = FICA_initialize();
+                flashError = FICA_GetImgTypeFromAddr(imgBaseAddr, &currImgType);
 
-                if (SLN_FLASH_NO_ERROR == flashError)
+                if ((FICA_IMG_TYPE_NONE >= currImgType) || (FICA_NUM_IMG_TYPES <= currImgType))
                 {
-                    flashError = FICA_GetImgTypeFromAddr(imgBaseAddr, &currImgType);
-
-                    if ((FICA_IMG_TYPE_NONE >= currImgType) || (FICA_NUM_IMG_TYPES <= currImgType))
-                    {
-                        flashError = SLN_FLASH_ERROR;
-                    }
+                    flashError = SLN_FLASH_ERROR;
                 }
 
                 if (SLN_FLASH_NO_ERROR == flashError)
@@ -185,13 +180,14 @@ status_t MSC_VFS_WriteResponse(uint32_t offset, uint32_t size, uint8_t *buffer)
                 }
                 else
                 {
+                	//this packet also need be programed
                     s_transferState = TRANSFER_ACTIVE;
+                    goto write_packet;
                 }
             }
-        }
-
-        if (TRANSFER_ACTIVE == s_transferState)
+        }else if (TRANSFER_ACTIVE == s_transferState)
         {
+write_packet:
             if (offset >= s_startOffset)
             {
                 uint32_t imgOffset;
@@ -199,6 +195,7 @@ status_t MSC_VFS_WriteResponse(uint32_t offset, uint32_t size, uint8_t *buffer)
                 // Calculate the image address for where to store this data
                 imgOffset = ((offset - s_startOffset) * s_lbaLength);
 
+                configPRINTF(("offset:0x%x s_startOffset:0x%x\r\n", offset, s_startOffset));
                 configPRINTF(("[Write Response] Saving %d of data to 0x%X...\r\n", size, imgOffset));
 
                 // write to external flash

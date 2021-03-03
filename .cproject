@@ -79,7 +79,7 @@
 									<listOptionValue builtIn="false" value="XIP_BOOT_HEADER_DCD_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="USE_WIFI_CONNECTION=1"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_AWS_IOT_OTA_ENABLED=0"/>
-									<listOptionValue builtIn="false" value="BOOTLOADER_FWUPDATE_ENABLE=1"/>
+									<listOptionValue builtIn="false" value="BOOTLOADER_FWUPDATE_ENABLE=0"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_OTW_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_TCP_OTA_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_WIFI_ENABLED=1"/>
@@ -522,7 +522,7 @@
 									<listOptionValue builtIn="false" value="XIP_BOOT_HEADER_DCD_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="USE_WIFI_CONNECTION=1"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_AWS_IOT_OTA_ENABLED=0"/>
-									<listOptionValue builtIn="false" value="BOOTLOADER_FWUPDATE_ENABLE=1"/>
+									<listOptionValue builtIn="false" value="BOOTLOADER_FWUPDATE_ENABLE=0"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_OTW_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_TCP_OTA_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOOTLOADER_WIFI_ENABLED=1"/>
@@ -944,5 +944,12 @@
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="eLock">
+			<resource resourceType="PROJECT" workspacePath="/sln_viznas_iot_bootloader_4343W"/>
+		</configuration>
+		<configuration configurationName="VIZN_board">
+			<resource resourceType="PROJECT" workspacePath="/sln_viznas_iot_bootloader_4343W"/>
+		</configuration>
+	</storageModule>
 </cproject>

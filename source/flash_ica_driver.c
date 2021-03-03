@@ -78,13 +78,8 @@ int32_t FICA_app_program_ext_init(int32_t newimgtype)
 
     s_newAppImgType = newimgtype;
 
-    // Initialize the Flash ICA (Image Configuration Area)
-    status = FICA_initialize();
-
-    if (SLN_FLASH_NO_ERROR == status)
-    {
-        status = FICA_GetCurAppStartType(&curimgtype);
-    }
+  	//FICA_initialize is called inside FICA_GetCurAppStartType
+    status = FICA_GetCurAppStartType(&curimgtype);
 
 //    if (newimgtype == curimgtype)
 //    {

@@ -70,6 +70,17 @@ void BOARD_InitPins(void) {
     IOMUXC_SetPinMux(
             IOMUXC_GPIO_B1_07_GPIO2_IO23,           /* GPIO_B1_07 is configured as GPIO2_IO23 */
             0U);
+
+    IOMUXC_SetPinConfig(
+    		IOMUXC_GPIO_B1_07_GPIO2_IO23,        /* GPIO_B1_13 PAD functional properties : */
+			0xB8B0U);                               /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: R0/6
+                                                 Speed Field: medium(100MHz)
+                                                 Open Drain Enable Field: Open Drain Disabled
+                                                 Pull / Keep Enable Field: Pull/Keeper Enabled
+                                                 Pull / Keep Select Field: Keeper
+                                                 Pull Up / Down Config. Field: 100K Ohm Pull Down
+                                                 Hyst. Enable Field: Hysteresis Disabled */
     /* Define the init structure for the input switch pin */
     gpio_pin_config_t sw_config = {
         kGPIO_DigitalInput,

@@ -57,6 +57,7 @@
 #define BOARD_FLASH_SIZE (0x2000000U)
 #define BOARD_FLASH_PAGE_SIZE (512)
 #define BOARD_FLASH_SECTOR_SIZE (0x40000)
+#define BOARD_FLASH_BLOCK_SIZE BOARD_FLASH_SECTOR_SIZE
 #define BOARD_FLASH_ID (0x7E)
 #else
 //#define QSPI_FLASH_W25Q128
@@ -70,6 +71,7 @@
 #endif
 #define BOARD_FLASH_PAGE_SIZE (256)
 #define BOARD_FLASH_SECTOR_SIZE (0x1000)
+#define BOARD_FLASH_BLOCK_SIZE (0x10000)
 #endif
 
 /* The UART to use for debug messages. */

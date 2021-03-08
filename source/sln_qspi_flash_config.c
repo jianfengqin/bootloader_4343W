@@ -79,6 +79,10 @@ const uint32_t customLUT[NORFLASH_LUT_LENGTH] = {
                         kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, NORFLASH_ADDR_LENGTH),
     [4 * NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM + 1] =
         FLEXSPI_LUT_SEQ(kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_1PAD, 0x04,
-                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0)
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
+
+	[4 * NOR_CMD_LUT_SEQ_IDX_ERASEBLOCK] =
+		FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, W25Q_BlockErase,
+						kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD,NORFLASH_ADDR_LENGTH),
 };
 #endif

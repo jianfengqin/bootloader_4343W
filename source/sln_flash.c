@@ -309,6 +309,40 @@ status_t SLN_Erase_Sector(uint32_t address)
     return status;
 }
 
+
+
+status_t SLN_Erase_Blocks(uint32_t address, int block_num)
+{
+    status_t status = 0;
+    uint32_t irqState;
+
+    irqState = SLN_ram_disable_irq();
+
+    SLN_ram_disable_d_cache();
+
+    for (int ii = 0 ;ii< block_num;ii++)
+    {
+		/* Erase sectors. */
+		status = flexspi_nor_flash_erase_block(FLEXSPI, address);
+		if (status != kStatus_Success)
+		{
+			break;
+		}
+    }
+
+    /* Do software reset. */
+    FLEXSPI_SoftwareReset(FLEXSPI);
+
+    SLN_ram_enable_d_cache();
+
+    SLN_ram_enable_irq(irqState);
+    /* Flush pipeline to allow pending interrupts take place
+     * before starting next loop */
+    __ASM volatile("isb 0xF" ::: "memory");
+
+    return status;
+}
+
 /* NOTE: SLN_Erase_Sector must be called prior to writing pages in a sector
  *       Afterwards, multiple pages can be written in that sector
  * NOTE: This function must always be used for writing full write pages (512 bytes) */

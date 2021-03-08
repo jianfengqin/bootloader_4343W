@@ -34,6 +34,7 @@ status_t flexspi_nor_write_enable(FLEXSPI_Type *base, uint32_t baseAddr);
 status_t flexspi_nor_wait_bus_busy(FLEXSPI_Type *base);
 
 status_t flexspi_nor_flash_erase_sector(FLEXSPI_Type *base, uint32_t address);
+status_t flexspi_nor_flash_erase_block(FLEXSPI_Type *base, uint32_t address);
 
 status_t flexspi_nor_flash_page_program_with_buffer(FLEXSPI_Type *base, uint32_t address, const uint32_t *src);
 

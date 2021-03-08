@@ -353,10 +353,11 @@ __attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_app_program_ext_set_
 __attribute__((section(".ramfunc.$SRAM_ITC"))) int32_t FICA_Erase_Bank(uint32_t startaddr,
                                                                                     uint32_t banksize)
 {
+	int block_num = (banksize + EXT_FLASH_ERASE_BLOCK -1 )/EXT_FLASH_ERASE_BLOCK;
     // Erase all sectors in this bank
-    for (uint32_t runaddr = startaddr; runaddr < (startaddr + banksize); runaddr += EXT_FLASH_ERASE_PAGE)
+    for (uint32_t runaddr = startaddr; runaddr < (startaddr + banksize); runaddr += EXT_FLASH_ERASE_BLOCK)
     {
-        if (SLN_Erase_Sector(runaddr) != kStatus_Success)
+        if (SLN_Erase_Blocks(runaddr,block_num) != kStatus_Success)
             return (SLN_FLASH_ERROR);
     }
     return (SLN_FLASH_NO_ERROR);

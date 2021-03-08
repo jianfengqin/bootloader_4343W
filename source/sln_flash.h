@@ -93,6 +93,8 @@ status_t SLN_Write_Flash_Page(uint32_t address, uint8_t *data, uint32_t len);
  */
 status_t SLN_Erase_Sector(uint32_t address);
 
+status_t SLN_Erase_Blocks(uint32_t address, int block_num);
+
 /*!
  * @brief Write a buffer to Flash, buffer is written page by page [WARNING: erases sector before write]
  *

@@ -37,10 +37,11 @@
 #define NOR_CMD_LUT_SEQ_IDX_ERASECHIP                   9
 #define NOR_CMD_LUT_SEQ_IDX_ERASESECTOR                 10
 #define NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM                 11
+#define NOR_CMD_LUT_SEQ_IDX_ERASEBLOCK                  12
 
 #define NORFLASH_SIZE                   (FLASH_SIZE/1024)
 
-#define NORFLASH_LUT_LENGTH             48
+#define NORFLASH_LUT_LENGTH             52
 #define NORFLASH_ADDR_LENGTH            24
 
 #define W25Q_WriteEnable                0x06

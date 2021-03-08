@@ -168,6 +168,12 @@ status_t flexspi_nor_flash_erase_sector(FLEXSPI_Type *base, uint32_t address)
     return status;
 }
 
+status_t flexspi_nor_flash_erase_block(FLEXSPI_Type *base, uint32_t address)
+{
+	return flexspi_nor_flash_erase_sector(base,address);
+
+}
+
 static status_t flexspi_nor_flash_page_program_with_buffer_seq2(FLEXSPI_Type *base,
                                                                 uint32_t address,
                                                                 const uint32_t *src)
